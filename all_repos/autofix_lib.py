@@ -222,7 +222,7 @@ def _fix_inner(
         autofix_settings: AutofixSettings,
 ) -> None:
     with repo_context(repo, use_color=autofix_settings.color):
-        branch_name = f'all-repos_autofix_{commit.branch_name}'
+        branch_name = f'{commit.branch_name}_all-repos'
         run('git', 'checkout', '--quiet', 'origin/HEAD', '-b', branch_name)
 
         apply_fix()
