@@ -10,4 +10,4 @@ def remote(path: str) -> str:
 
 
 def repo_name(path: str) -> str:
-    return remote(path).split("/")[-1].split(".git")[0]
+    return remote(path).split('/')[-1].split('.git')[0]

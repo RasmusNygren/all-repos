@@ -17,6 +17,11 @@ def req(url: str, **kwargs: Any) -> Response:
     return Response(obj['values'], obj.get('next'))
 
 
+def req_no_pagination(url: str, **kwargs: Any) -> Response:
+    resp = urllib.request.urlopen(urllib.request.Request(url, **kwargs))
+    return resp
+
+
 def get_all(url: str, **kwargs: Any) -> list[dict[str, Any]]:
     ret: list[dict[str, Any]] = []
     resp = req(url, **kwargs)
