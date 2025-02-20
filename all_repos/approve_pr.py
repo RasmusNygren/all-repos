@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import functools
+import getpass
 import json
 from typing import Any
 from collections.abc import Sequence
@@ -53,12 +54,13 @@ def merge_pr(pr_id: int, pr_version: int, project: str, repo_slug: str, config: 
         method='POST',
     )
 
-def approve_pr(pr_id: int, project: str, repo_slug: str, user_slug: str, config: Config) -> None:
+def approve_pr(pr_id: int, project: str, repo_slug: str, config: Config) -> None:
 
     end_point = f'projects/{project}/repos/{repo_slug}/pull-requests'
     pr_url = (
         f'https://{config.source_settings.base_url}/rest/api/1.0/{end_point}/{pr_id}'  # noqa: E501
     )
+    user_slug = getpass.getuser()
     url = f'{pr_url}/participants/{user_slug}'
     data = json.dumps({
         'status': 'APPROVED',
@@ -89,7 +91,6 @@ def run_approve_pr(
         config: Config,
         title: str,
         merge: bool,
-        user_slug: str,
 ) -> int:
     remote = git.remote(repo)
     remote_url = remote[:-len('.git')] if remote.endswith('.git') else remote
@@ -97,7 +98,7 @@ def run_approve_pr(
 
     # Approve PR
     for pr in find_prs(repo, title, config):
-        approve_pr(pr["id"], project, repo_slug, user_slug, config)
+        approve_pr(pr["id"], project, repo_slug, config)
         if merge:
             merge_pr(pr["id"], pr["version"], project, repo_slug, config)
 
@@ -129,13 +130,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         required=True,
     )
     parser.add_argument(
-        '--user-slug',
-        help=(
-            'specify the user slug to approve the PR'
-        ),
-        required=True,
-    )
-    parser.add_argument(
         '--merge', action='store_true',
         help=(
             'specify ticket number to be auto-approved'
@@ -156,7 +150,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         title=args.title,
         config=config,
         merge=args.merge,
-        user_slug=args.user_slug,
     )
 
     # TODO: allow configuring #jobs
