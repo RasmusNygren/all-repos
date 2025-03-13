@@ -285,7 +285,7 @@ def test_autofix_makes_commits(file_config_files, capfd):
         'git', '-C', file_config_files.dir1, 'log',
         '--format=%s', '--first-parent', '-1',
     )).strip().decode()
-    potential_msgs = testing.git.merge_msgs('all-repos_autofix_test-branch')
+    potential_msgs = testing.git.merge_msgs('test-branch_all-repos')
     assert last_commit_msg in potential_msgs
 
     # We should see a commit from the autofix change we made

@@ -4,8 +4,8 @@ import argparse
 import functools
 import getpass
 import json
-from typing import Any
 from collections.abc import Sequence
+from typing import Any
 
 import bitbucket_api
 import git
@@ -25,12 +25,12 @@ def _request_headers(config: Config) -> dict[str, str]:
 
 # TODO: For whatever reason, this documented API is not actually working as expected.
 def delete_branch(name: str, project: str, repo_slug: str, config: Config, *, target_commit=None) -> None:
-    delete_url = f'https://{config.source_settings.base_url}/branch-utils/latest/projects/{project}/repos/{repo_slug}/branches' # noqa: E501
+    delete_url = f'https://{config.source_settings.base_url}/branch-utils/latest/projects/{project}/repos/{repo_slug}/branches'  # noqa: E501
     data = {
-        "name": name
+        'name': name,
     }
     if target_commit:
-        data["endPoint"] = target_commit 
+        data['endPoint'] = target_commit
 
     data = json.dumps(data).encode()
     bitbucket_api.req_no_pagination(
@@ -38,7 +38,8 @@ def delete_branch(name: str, project: str, repo_slug: str, config: Config, *, ta
         headers=_request_headers(config),
         data=data,
     )
-    return 
+    return
+
 
 def merge_pr(pr_id: int, pr_version: int, project: str, repo_slug: str, config: Config) -> None:
 
@@ -53,6 +54,7 @@ def merge_pr(pr_id: int, pr_version: int, project: str, repo_slug: str, config: 
         headers=_request_headers(config),
         method='POST',
     )
+
 
 def approve_pr(pr_id: int, project: str, repo_slug: str, config: Config) -> None:
 
@@ -72,6 +74,7 @@ def approve_pr(pr_id: int, project: str, repo_slug: str, config: Config) -> None
         data=data,
         method='PUT',
     )
+
 
 def find_prs(repo: str, title: str, config: Config) -> list[dict[str, Any]]:
     remote = git.remote(repo)
@@ -98,11 +101,12 @@ def run_approve_pr(
 
     # Approve PR
     for pr in find_prs(repo, title, config):
-        approve_pr(pr["id"], project, repo_slug, config)
+        approve_pr(pr['id'], project, repo_slug, config)
         if merge:
-            merge_pr(pr["id"], pr["version"], project, repo_slug, config)
+            merge_pr(pr['id'], pr['version'], project, repo_slug, config)
 
     return 0
+
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
