@@ -7,10 +7,9 @@ import json
 from collections.abc import Sequence
 from typing import Any
 
-import bitbucket_api
-import git
-
+from all_repos import bitbucket_api
 from all_repos import cli
+from all_repos import git
 from all_repos import mapper
 from all_repos.config import Config
 from all_repos.config import load_config
@@ -23,26 +22,13 @@ def _request_headers(config: Config) -> dict[str, str]:
     }
 
 
-# TODO: For whatever reason, this documented API is not actually working as expected.
-def delete_branch(name: str, project: str, repo_slug: str, config: Config, *, target_commit=None) -> None:
-    delete_url = f'https://{config.source_settings.base_url}/branch-utils/latest/projects/{project}/repos/{repo_slug}/branches'  # noqa: E501
-    data = {
-        'name': name,
-    }
-    if target_commit:
-        data['endPoint'] = target_commit
-
-    data = json.dumps(data).encode()
-    bitbucket_api.req_no_pagination(
-        delete_url,
-        headers=_request_headers(config),
-        data=data,
-    )
-    return
-
-
-def merge_pr(pr_id: int, pr_version: int, project: str, repo_slug: str, config: Config) -> None:
-
+def merge_pr(
+        pr_id: int,
+        pr_version: int,
+        project: str,
+        repo_slug: str,
+        config: Config,
+) -> None:
     end_point = f'projects/{project}/repos/{repo_slug}/pull-requests'
     url = (
         f'https://{config.source_settings.base_url}/rest/api/1.0/{end_point}/{pr_id}'  # noqa: E501
@@ -56,8 +42,12 @@ def merge_pr(pr_id: int, pr_version: int, project: str, repo_slug: str, config: 
     )
 
 
-def approve_pr(pr_id: int, project: str, repo_slug: str, config: Config) -> None:
-
+def approve_pr(
+        pr_id: int,
+        project: str,
+        repo_slug: str,
+        config: Config,
+) -> None:
     end_point = f'projects/{project}/repos/{repo_slug}/pull-requests'
     pr_url = (
         f'https://{config.source_settings.base_url}/rest/api/1.0/{end_point}/{pr_id}'  # noqa: E501
